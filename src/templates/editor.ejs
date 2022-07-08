@@ -1,0 +1,76 @@
+<link
+  rel="stylesheet"
+  href="//cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs/editor/editor.main.min.css"
+/>
+<style>
+  #container {
+    height: 400px;
+    border: 1px solid black;
+  }
+  .control-label {
+    display: iline-block;
+    position: relative;
+    top: -4px;
+    margin-right: 4px;
+  }
+  .language-picker {
+    width: 220px;
+    height: 30px;
+    background-color: #fff;
+    border: 1px solid #bbb;
+  }
+</style>
+<label class="control-label">Language</label>
+<select class="language-picker">
+  <option>python</option>
+  <option>java</option>
+</select>
+<div id="container"></div>
+<button id="submit">제출</button>
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/loader.min.js"></script>
+<script type="module">
+  import { io } from "https://cdn.socket.io/4.5.1/socket.io.esm.min.js";
+
+  var editor;
+  var socket;
+
+  socket = io("http://localhost:5000");
+  socket.on("connect", () => {
+    socket.emit("exec", 500, 500);
+    socket.on("result", (data) => {
+      console.log(data);
+    });
+    socket.on("init-complete", () => {
+      require.config({
+        paths: {
+          vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs",
+        },
+      });
+      require(["vs/editor/editor.main"], () => {
+        $("#container").empty();
+        editor = monaco.editor.create(document.getElementById("container"), {
+          value: `print("hello")`,
+          language: "python",
+          theme: "vs-dark",
+        });
+      });
+      $("#submit").on("click", () => {
+        socket.emit("source", editor.getValue());
+      });
+    });
+  });
+  /*$(".language-picker").change(function () {
+    console.log("changed");
+    require(["vs/editor/editor.main"], () => {
+      $("#container").empty();
+      monaco.editor.create(document.getElementById("container"), {
+        value: `def solution():
+    answer =0
+    return answer`,
+        language: "python",
+        theme: "vs-dark",
+      });
+    });
+  });*/
+</script>
