@@ -31,6 +31,7 @@ io.adapter(createAdapter(pubClient, subClient));
 
 let dummy_docker_containers: Map<String, Container> = new Map();
 let docker_streams: Map<String, any> = new Map();
+let docker_streams_switches: Map<String, Boolean> = new Map();
 
 io.on("connection", (socket: Socket) => {
   console.log(`User ${socket.id} connected`);
@@ -109,7 +110,12 @@ io.on("connection", (socket: Socket) => {
 });
 
 app.get("/", (req: Request, res: Response) => {
-  res.render("editor");
+  const problems: Array<any> = require("./problems/problems.json");
+  const selected_problem =
+    problems[Math.floor(Math.random() * problems.length)];
+  res.render("editor", {
+    selected_problem,
+  });
 });
 
 httpServer.listen(process.env.PORT, () => {

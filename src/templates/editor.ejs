@@ -25,6 +25,8 @@
   <option>python</option>
   <option>java</option>
 </select>
+<div><%= selected_problem.name %></div>
+<div><%= selected_problem.content %></div>
 <div id="container"></div>
 <button id="submit">제출</button>
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
@@ -50,7 +52,7 @@
       require(["vs/editor/editor.main"], () => {
         $("#container").empty();
         editor = monaco.editor.create(document.getElementById("container"), {
-          value: `print("hello")`,
+          value: `<%= selected_problem.value %>`,
           language: "python",
           theme: "vs-dark",
         });
