@@ -14,6 +14,9 @@ import {
   exec_start_options,
 } from "./configs/dockerConfigs";
 import path from "path";
+import fs from "fs";
+
+const problems: Array<any> = require("./problems/problems.json");
 
 const app: Application = express();
 const httpServer: any = createServer(app);
@@ -72,7 +75,9 @@ io.on("connection", (socket: Socket) => {
                         console.log("stream", stream);
                         exec!.resize({ h, w }, () => {});
                         stream!.on("data", (chunk) => {
-                          socket.emit("result", chunk.toString());
+                          console.log(chunk.toString());
+                          if (chunk.toString().startsWith("[valid data]"))
+                            socket.emit("result", chunk.toString());
                         });
                         socket.emit("init-complete");
                       }
@@ -86,12 +91,18 @@ io.on("connection", (socket: Socket) => {
       }
     );
 
-    socket.on("source", (data) => {
-      console.log(data);
+    socket.on("source", (problem_idx, data) => {
+      const pre = fs.readFileSync(
+        path.join(__dirname, "problems", `${problems[problem_idx].name}.py`),
+        "utf-8"
+      );
       docker_streams
         .get(socket.id)
         .write(
-          `cd ~/ && rm -rf ./* && echo '${data}' >> code.py && python3 code.py && clear\n`
+          `cd ~/ && rm -rf ./* && echo '${data.replace(
+            /\t/gi,
+            "    "
+          )}' >> code.py && echo '${pre}'>> code.py && python3 code.py && clear\n`
         );
     });
 
@@ -110,7 +121,6 @@ io.on("connection", (socket: Socket) => {
 });
 
 app.get("/", (req: Request, res: Response) => {
-  const problems: Array<any> = require("./problems/problems.json");
   const selected_problem =
     problems[Math.floor(Math.random() * problems.length)];
   res.render("editor", {
