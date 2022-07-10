@@ -9,3 +9,6 @@ RUN apt-get -y install vim
 
 RUN apt-get -y install python3
 RUN apt-get -y install python3-pip
+
+RUN DEBIAN_FRONTEND=noninteractive TZ=Asia/Seoul apt-get -y install tzdata
+RUN apt-get install -y openjdk-8-jdk

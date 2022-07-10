@@ -1,7 +1,7 @@
 import { ContainerCreateOptions } from "dockerode";
 
 export const container_options: ContainerCreateOptions = {
-  Image: "ubuntu_for_compile:1.0.0",
+  Image: "ubuntu_for_compile:v1.0.1",
   AttachStdin: false,
   AttachStdout: true,
   AttachStderr: true,

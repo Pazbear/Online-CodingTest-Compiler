@@ -66,6 +66,7 @@ io.on("connection", (socket: Socket) => {
                         docker_streams.set(socket.id, stream!);
                         exec!.resize({ h, w }, () => {});
                         stream!.on("data", (chunk) => {
+                          console.log(chunk.toString());
                           if (chunk.toString().startsWith("[valid data]"))
                             socket.emit("result", chunk.toString()); //서버에서 출력되는 유효 데이터를 클라이언트에 전송
                         });
@@ -81,18 +82,38 @@ io.on("connection", (socket: Socket) => {
       }
     );
 
-    socket.on("source", (problem_idx, data) => {
+    socket.on("source", (problem_idx, language, data) => {
       //클라이언트로부터 소스코드 를 받으면
+      const ext =
+        language == "python" ? "py" : language == "java" ? "java" : "";
       const pre = fs.readFileSync(
-        path.join(__dirname, "problems", `${problems[problem_idx].name}.py`),
+        path.join(
+          __dirname,
+          "problems",
+          `${problems[problem_idx].name}`,
+          `code.${ext}`
+        ),
         "utf-8"
       ); //문제의 기본작성된 코드를 받아
-      docker_streams.get(socket.id).write(
-        `cd ~/ && rm -rf ./* && echo '${data.replace(
-          /\t/gi,
-          "    " //제대로 python 들여쓰기 되지 않아 임의로 탭을 스페이스 4개로 변경
-        )}' >> code.py && echo '${pre}'>> code.py && python3 code.py && clear\n` // 도커의 우분투 서버에서 실행
-      );
+      switch (language) {
+        case "python":
+          docker_streams.get(socket.id).write(
+            `cd ~/ && rm -rf ./* && echo '${data.replace(
+              /\t/gi,
+              "    " //제대로 python 들여쓰기 되지 않아 임의로 탭을 스페이스 4개로 변경
+            )}' >> code.py && echo '${pre}'>> code.py && python3 code.py && clear\n` // 도커의 우분투 서버에서 실행
+          );
+          break;
+        case "java":
+          docker_streams
+            .get(socket.id)
+            .write(
+              `cd ~/ && rm -rf ./* && echo '${pre}${data}' >> code.java && javac -d . code.java && java -cp . problems.${problems[problem_idx].name}.code && clear\n`
+            );
+          break;
+        default:
+          break;
+      }
     });
 
     socket.on("disconnect", () => {

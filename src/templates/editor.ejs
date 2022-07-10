@@ -52,10 +52,10 @@
 >
   <label class="control-label">Language</label>
   <select class="language-picker">
-    <option>python</option>
-    <option>java</option>
+    <option value="python">python</option>
+    <option value="java">java</option>
   </select>
-  <div><%= selected_problem.name %><br /><br /></div>
+  <h1><%= selected_problem.name %></h1>
   <div>
     <% for ( var n in selected_problem.content){ %>
     <%=selected_problem.content[n] %><br /><br />
@@ -96,23 +96,37 @@
           socket.emit(
             "source",
             "<%= selected_problem.idx %>",
+            $(".language-picker").val(),
             editor.getValue()
           );
         });
       });
     });
-    /*$(".language-picker").change(function () {
-    console.log("changed");
-    require(["vs/editor/editor.main"], () => {
-      $("#container").empty();
-      monaco.editor.create(document.getElementById("container"), {
-        value: `def solution():
-    answer =0
-    return answer`,
-        language: "python",
-        theme: "vs-dark",
+    $(".language-picker").change(function () {
+      console.log("changed");
+      require(["vs/editor/editor.main"], () => {
+        $("#container").empty();
+        editor = monaco.editor.create(document.getElementById("container"), {
+          value:
+            this.value === "python"
+              ? `def solution():
+        answer =0
+        return answer`
+              : this.value === "java"
+              ? `class Solution {
+        public int solution(int[] nums) {
+            int answer = -1;
+
+            System.out.println("Hello Java");
+
+            return answer;
+        }
+    }`
+              : "",
+          language: this.value,
+          theme: "vs-dark",
+        });
       });
     });
-  });*/
   </script>
 </body>
