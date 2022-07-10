@@ -15,6 +15,8 @@
 
 <img width="911" alt="스크린샷 2022-07-10 오전 12 22 09" src="https://user-images.githubusercontent.com/57740008/178111991-6931e334-a627-4197-b711-9ec7f9df7c48.png">
 
+## Python
+
 ### 답안 처리
 
 #### 준비된 답안 2개 모두 성공 시
@@ -25,4 +27,12 @@
 
 <img width="911" alt="스크린샷 2022-07-10 오전 12 29 48" src="https://user-images.githubusercontent.com/57740008/178112235-74da9119-42bb-436b-8ac5-7373588ec5cc.png">
 
-### 현재 python에 대해서만 개발했습니다.
+## Java
+
+### 답안 처리
+
+#### 1개만 성공 시
+
+<img width="839" alt="스크린샷 2022-07-11 오전 2 43 58" src="https://user-images.githubusercontent.com/57740008/178156095-bee488d3-e93f-410d-97d6-bddf2b415375.png">
+
+### 현재 python과 java에 대해서만 개발했습니다.
